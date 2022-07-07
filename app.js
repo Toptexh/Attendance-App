@@ -15,14 +15,17 @@ const app = express();
 connectDB()
 
 
+
 const studentsRoute = require("./routes/studentsRoute");
+// const auth = require("./routes/auth");
 app.use("/students", studentsRoute);
+// app.use("/auth", auth);
 
 
 // Sheet download cron task
-cron.schedule("* * * * *", async (req, res) => {
+cron.schedule("*/5 * * * *", async (req, res) => {
     // File URL
-    const url = `https://people.sc.fsu.edu/~jburkardt/data/csv/addresses.csv`;
+    const url = `https://docs.google.com/spreadsheets/d/e/2PACX-1vTExabDrsxwjHz-QS4UpIGrmuhS8nGnBXYSwCHtmDUXvajGlVOsP72tES61uusewfyFbeOnl2-wWxlW/pub?gid=759688148&single=true&output=csv`;
 
          // Download the file
         (async () => {
@@ -30,14 +33,14 @@ cron.schedule("* * * * *", async (req, res) => {
         })();
     // convert users.csv file to JSON array
     CSVToJSON()
-      .fromFile("./addresses.csv")
+      .fromFile("./Attendanceform - Form responses 1.csv")
       .then( async(users) => {
         // users is a JSON array
         await Student.deleteMany()
         await Student.insertMany(users)
         // log the JSON array
         console.log(users);
-        fs.unlinkSync("./addresses.csv");
+        fs.unlinkSync("./Attendanceform - Form responses 1.csv");
       })
       .catch((err) => {
         // log error if any
